@@ -11,7 +11,7 @@ pub struct Integer {
     digits: Vec<u8>,
 }
 
-pub const BASIC_INT_RADIX: usize = 10;
+pub const BASIC_INT_RADIX: usize = 16;
 
 #[allow(dead_code)]
 impl Integer {
@@ -23,6 +23,11 @@ impl Integer {
     }
     pub fn zero() -> Self {
         Self::new(false, vec![0])
+    }
+    pub fn is_zero(self: Self) -> bool {
+        let mut n: Self = self.clone();
+        n.tidy();
+        n.digits.len() == 1 && n.digits[0] == 0
     }
 
     pub fn from_isize(number: isize) -> Self {
@@ -346,6 +351,9 @@ impl Float {
     pub fn zero() -> Self {
         Self::new(Integer::zero(), Integer::zero())
     }
+    pub fn is_zero(self: Self) -> bool {
+        self.value.is_zero()
+    }
 
     pub fn from_f64(number: f64) -> Self {
         let number_string_list: Vec<String> = number
@@ -379,7 +387,6 @@ impl Float {
         let mut digit_value_now: f64 = 0.0;
         while float >= digit_value_now {
             if digit_value_now != 0.0 {
-                // println!("{}, {}", float, digit_value_now);
                 let digit: f64 = (float / digit_value_now).floor();
                 float -= digit * digit_value_now;
                 digits_float.push(digit as u8);
@@ -423,7 +430,6 @@ impl Float {
         Self::new(Integer::zero(), n)
     }
     pub fn to_f64(self: Self) -> f64 {
-        // println!("{:?}", self.value.digits);
         let digits: Vec<u8> = self.value.digits.clone();
         digits
             .iter()
